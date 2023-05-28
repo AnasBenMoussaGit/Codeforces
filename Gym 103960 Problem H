@@ -1,0 +1,81 @@
+        #include <bits/stdc++.h>
+        #define int long long
+        using namespace std;
+        const int N=1e4+5;
+        vector<int>adj[N];
+        vector<int>rev[N];
+        vector<int>new_adj[N];
+        vector<int>order;
+        vector<int>cmp;
+        vector<int>root_nodes;
+        bool vis[N];
+        int roots[N];int indegree[N];int outdegree[N];
+        int x;int y;int res=0;int ans=0;
+        void dfs(int n){
+            vis[n]=1;
+            for(auto u:adj[n]){
+                if(vis[u]){
+                    continue;
+                }
+                dfs(u);
+            }
+            order.push_back(n);
+        }
+        void dfs2(int n){
+            cmp.push_back(n);
+            vis[n]=1;
+            for(auto u:rev[n]){
+                if(vis[u]){
+                    continue;
+                }
+                dfs2(u);
+            }
+        }
+        int32_t main(){
+        ios_base::sync_with_stdio(false);cin.tie(NULL);
+        cin>>x>>y;
+        for(int i=0;i<y;i++){
+            int a;cin>>a;int b;cin>>b;
+            adj[a].push_back(b);
+            rev[b].push_back(a);
+        }
+        for(int i=1;i<=x;i++){
+            if(!vis[i]){
+                dfs(i);
+            }
+        }
+        memset(vis,0,sizeof(vis));
+        reverse(order.begin(),order.end());
+        for(auto u:order){
+            if(!vis[u]){
+                dfs2(u);
+                int root=cmp.front();root_nodes.push_back(root);
+                for(auto j:cmp){
+                    roots[j]=root;
+                }
+                cmp.clear();
+            }
+        }
+        for(int i=1;i<=x;i++){
+            for(auto u:adj[i]){
+                int a=roots[i];int b=roots[u];
+                if(a!=b){
+                    indegree[b]++;outdegree[a]++;
+                }
+            }
+        }
+        if(root_nodes.size()==1){
+            cout<<0<<endl;
+            return 0;
+        }
+        for(auto u:root_nodes){
+            if(indegree[u]==0){
+                res++;
+            }
+            if(outdegree[u]==0){
+                ans++;
+            }
+        }
+        cout<<max(res,ans)<<endl;
+        return 0;
+        }
